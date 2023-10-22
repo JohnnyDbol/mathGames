@@ -8,36 +8,10 @@ const settings = {
   problem: "1 X 1",
   soultion: 1,
   score: 0,
+  lastAnswerTime: 30,
+
+  question: "1 X 1",
 };
-
-function ButtonGo({ handler }) {
-  return <></>;
-}
-function generateProblem(value) {
-  // Generate two random integers between 2 and 9
-  let num1 = 1;
-  let num2 = 2;
-  if (value == "1") {
-    num1 = Math.floor(Math.random() * 8) + 2;
-    num2 = Math.floor(Math.random() * 8) + 2;
-  } else if ((value = "2")) {
-    num1 = Math.floor(Math.random() * 9) + 11;
-    num2 = Math.floor(Math.random() * 8) + 2;
-  } else if ((value = "3")) {
-    num1 = Math.floor(Math.random() * 9) + 11;
-    num2 = Math.floor(Math.random() * 9) + 11;
-  }
-
-  // Formulate the problem and calculate the answer
-  const problem = `${num1} X ${num2}`;
-  const answer = num1 * num2;
-
-  // Return an object with the problem and answer
-  return {
-    problem: problem,
-    answer: answer,
-  };
-}
 
 export default function Home() {
   const [problem, setProblem] = useState("1 X 1");
@@ -49,6 +23,7 @@ export default function Home() {
   const [value, setValue] = useState("1");
   const [counter, setCounter] = useState("text-black text-xl");
   const [go, setGo] = useState("opacity-100");
+  const [wrong, setWrong] = useState(0);
   useEffect(() => {
     if (time == 10) {
       setCounter("text-red-600 text-xl");
@@ -66,12 +41,41 @@ export default function Home() {
   const minutes = Math.floor(time / 60);
   const seconds = time % 60;
 
+  function generateProblem(v) {
+    // Generate two random integers between 2 and 9
+    //alert(v);
+    let num1 = 1;
+    let num2 = 2;
+    if (v == "1") {
+      num1 = Math.floor(Math.random() * 8) + 2;
+      num2 = Math.floor(Math.random() * 8) + 2;
+    } else if (v == "2") {
+      num1 = Math.floor(Math.random() * 9) + 11;
+      num2 = Math.floor(Math.random() * 8) + 2;
+    } else if (v == "3") {
+      num1 = Math.floor(Math.random() * 9) + 11;
+      num2 = Math.floor(Math.random() * 9) + 11;
+    }
+
+    // Formulate the problem and calculate the answer
+    const problem = `${num1} X ${num2}`;
+    const answer = num1 * num2;
+
+    // Return an object with the problem and answer
+    return {
+      problem: problem,
+      answer: answer,
+    };
+  }
+
   function handler(e, opt) {
     if (opt[0] == "updateProblem") {
+      //alert(value);
       const temp = generateProblem(value);
 
       setProblem(temp.problem);
     } else if (opt[0] == "start") {
+      //alert("start" + value);
       let temp = JSON.parse(JSON.stringify(s));
 
       temp.focus = true;
@@ -84,7 +88,13 @@ export default function Home() {
       setTiming(true);
       setGo("opacity-0");
       setS(temp);
-      setTime(59);
+      if (value == 1) {
+        setTime(30);
+      } else if (value == 2) {
+        setTime(45);
+      } else if (value == 3) {
+        setTime(60);
+      }
     } else if (opt[0] == "numChange") {
       let temp = JSON.parse(JSON.stringify(s));
       const a = temp.solution;
@@ -92,12 +102,15 @@ export default function Home() {
       //alert(i + 1);
       if (a + "".length < i + "".length) {
         e.target.value = "";
+        setWrong(wrong + 1);
         doThings(false);
       } else if (((a + "").length == (i + "").length) & (a != i)) {
         e.target.value = "";
+        setWrong(wrong + 1);
         doThings(false);
       } else if (a == i) {
         e.target.value = "";
+        //alert("correct" + value);
         const tempProb = generateProblem(value);
         temp.problem = tempProb.problem;
         temp.solution = tempProb.answer;
@@ -110,6 +123,7 @@ export default function Home() {
       setCounter("text-black text-xl");
       setTiming(false);
     } else if (opt[0] == "difficulty") {
+      alert(e.target.value);
       setValue(e.target.value);
     }
   }
@@ -215,7 +229,20 @@ export default function Home() {
         <dialog id="my_modal_1" className="modal">
           <div className="modal-box">
             <h3 className="font-bold text-lg">Game Over</h3>
-            <p className="py-4">Your score={s.score}</p>
+            <p className="py-4">Your score = {s.score}</p>
+            <p className="py-4">Number wrong = {wrong}</p>
+            <p className="py-4">Next game:</p>
+            <div className={s.button + "join-item px-1"}>
+              <select
+                onChange={(e) => handler(e, ["difficulty"])}
+                value={value}
+                className="select select-bordered select-accent w-full max-w-xs"
+              >
+                <option value="1">Easy</option>
+                <option value="2">Medium</option>
+                <option value="3">Hard</option>
+              </select>
+            </div>
             <div className="modal-action">
               <form method="dialog">
                 {/* if there is a button in form, it will close the modal */}
