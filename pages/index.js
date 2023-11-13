@@ -43,7 +43,7 @@ export default function Home() {
 
   function generateProblem(v) {
     // Generate two random integers between 2 and 9
-    //alert(v);
+
     let num1 = 1;
     let num2 = 2;
     if (v == "1") {
@@ -70,12 +70,10 @@ export default function Home() {
 
   function handler(e, opt) {
     if (opt[0] == "updateProblem") {
-      //alert(value);
       const temp = generateProblem(value);
 
       setProblem(temp.problem);
     } else if (opt[0] == "start") {
-      //alert("start" + value);
       let temp = JSON.parse(JSON.stringify(s));
 
       temp.focus = true;
@@ -99,7 +97,7 @@ export default function Home() {
       let temp = JSON.parse(JSON.stringify(s));
       const a = temp.solution;
       const i = e.target.value / 1;
-      //alert(i + 1);
+
       if (a + "".length < i + "".length) {
         e.target.value = "";
         setWrong(wrong + 1);
@@ -110,7 +108,7 @@ export default function Home() {
         doThings(false);
       } else if (a == i) {
         e.target.value = "";
-        //alert("correct" + value);
+
         const tempProb = generateProblem(value);
         temp.problem = tempProb.problem;
         temp.solution = tempProb.answer;
@@ -123,7 +121,6 @@ export default function Home() {
       setCounter("text-black text-xl");
       setTiming(false);
     } else if (opt[0] == "difficulty") {
-      alert(e.target.value);
       setValue(e.target.value);
     }
   }
